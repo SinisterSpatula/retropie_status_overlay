@@ -43,3 +43,18 @@ Under-Voltage, Freq-capped due to high temperature, battery critical, shutdown i
 ![In-game](_images/ingame.png)  
 In-game
 
+# ps3 battery checker
+```
+chmod +x bluetooth.sh
+```
+chage /opt/retropie/configs/all/autostart.sh like below:
+```
+# Start PS3 controller battery check script
+cd /home/pi/git/gbz_overlay/
+python ps3battery.py &
+
+emulationstation #auto
+```
+reboot
+
+
