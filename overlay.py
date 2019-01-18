@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 # @ made by d-rez / dark_skeleton
 # Requires:
-# - ADS1015 with Vbat on A0
 # - pngview
 # - a symbolic link to ic_battery_alert_red_white_36dp.png under
 #   material_design_icons_master/device/drawable-mdpi/
@@ -11,7 +10,6 @@
 # - code comments. someday...
 
 import time
-import Adafruit_ADS1x15
 import subprocess
 import os
 import re
@@ -25,7 +23,7 @@ from enum import Enum
 pngview_path="/usr/local/bin/pngview"
 pngview_call=[pngview_path, "-d", "0", "-b", "0x0000", "-n", "-l", "15000", "-y", "0", "-x"]
 
-iconpath="/home/pi/src/material-design-icons-master/device/drawable-mdpi/"
+iconpath="/home/pi/material-design-icons-master/device/drawable-mdpi/"
 iconpath2 = os.path.dirname(os.path.realpath(__file__)) + "/overlay_icons/"
 logfile = os.path.dirname(os.path.realpath(__file__)) + "/overlay.log"
 dpi=36
@@ -54,6 +52,8 @@ env_cmd="vcgencmd get_throttled"
 
 fbfile="tvservice -s"
 
+ps3dumper = os.path.dirname(os.path.realpath(__file__)) + "/bluetooth.sh"
+
 #charging no load: 4.85V max (full bat)
 #charging es load: 4.5V max
 
@@ -80,7 +80,7 @@ class InterfaceState(Enum):
 # 3.2V => will die in 10 mins under load, shut down
 # 3.3V => warning icon?
 
-adc = Adafruit_ADS1x15.ADS1015()
+#adc = Adafruit_ADS1x15.ADS1015()
 # Choose a gain of 1 for reading voltages from 0 to 4.09V.
 # Or pick a different gain to change the range of voltages that are read:
 #  - 2/3 = +/-6.144V
@@ -103,6 +103,12 @@ def translate_bat(voltage):
 
   # Convert the 0-1 range into a value in the right range.
   return icons[state][int(round(valueScaled * rightSpan))]
+
+def ps3controller():
+  try:
+    os.system(ps3dumper)
+  except OSError:
+    pass
 
 def wifi():
   global wifi_state, overlay_processes
@@ -193,8 +199,7 @@ def environment():
 
 def battery():
   global battery_level, overlay_processes, battery_history
-  value = adc.read_adc(0, gain=2/3)
-  value_v = value * 0.003
+  value_v = 4.2#value * 0.003
 
   battery_history.append(value_v)
   try:
@@ -242,6 +247,7 @@ while True:
   wifi_state = wifi()
   bt_state = bluetooth()
   env = environment()
+  ps3controller()
   my_logger.info("%s,median: %.2f, %s,icon: %s,wifi: %s,bt: %s, throttle: %#0x" % (
     datetime.now(),
     value_v,
@@ -251,4 +257,5 @@ while True:
     bt_state.name,
     env
   ))
+  print(overlay_processes)
   time.sleep(20)
