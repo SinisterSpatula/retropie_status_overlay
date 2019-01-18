@@ -43,7 +43,9 @@ Under-Voltage, Freq-capped due to high temperature, battery critical, shutdown i
 ![In-game](_images/ingame.png)  
 In-game
 
-# ps3 battery checker
+# PS3 Battery Indicator
+![Effect](_images/PS3BatteryIndicator.png)  
+Effect
 ```
 chmod +x bluetooth.sh
 ```
