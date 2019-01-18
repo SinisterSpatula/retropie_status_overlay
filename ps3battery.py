@@ -15,7 +15,7 @@ pngview_call=[pngview_path, "-d", "0", "-b", "0x0000", "-n", "-l", "15000", "-y"
 
 logfile = os.path.dirname(os.path.realpath(__file__)) + "/log/ps3battery.log"
 
-dpi=36
+dpi=43
 overlay_processes = {"ps3":[]}
 
 def ps3controller():
@@ -57,6 +57,11 @@ def ps3controller():
 						if k["handle"] == handleid and not k.has_key("battery"):
 							print(tmp)
 							k["battery"] = tmp.split()[11]
+							counter+=1
+
+				# find all devices
+				if counter>=len(devices):
+					break
 
 				line = f.readline()
 					
@@ -66,10 +71,15 @@ def ps3controller():
 			if not devices[i].has_key("battery"):
 				continue
 
+			x_pos = dpi * 2 * (i/2)
+			if i%2:
+				x_pos = int(resolution[0]) - dpi * 2 * ((i+2)/2)
+
 			if devices[i]["battery"] == 'EE':
-				process = subprocess.Popen(pngview_call + [str(dpi * 2 * i), os.path.dirname(os.path.realpath(__file__)) + "/icons/bat_charge.png"])
+				process = subprocess.Popen(pngview_call + [str(x_pos), os.path.dirname(os.path.realpath(__file__)) + "/icons/bat_charge.png"])
 			else:
-				process = subprocess.Popen(pngview_call + [str(dpi * 2 * i), os.path.dirname(os.path.realpath(__file__)) + "/icons/bat"+str((int)(devices[i]["battery"])-1)+".png"])
+				
+				process = subprocess.Popen(pngview_call + [str(x_pos), os.path.dirname(os.path.realpath(__file__)) + "/icons/bat"+str((int)(devices[i]["battery"])-1)+".png"])
 
 			overlay_processes["ps3"].append(process)
 
@@ -89,6 +99,8 @@ my_logger.addHandler(console)
 # Get Framebuffer resolution
 resolution=re.search("(\d{3,}x\d{3,})", subprocess.check_output(fbfile.split()).decode().rstrip()).group().split('x')
 my_logger.info(resolution)
+
+os.system("pkill pngview")
 
 while True:
 	ps3controller()
