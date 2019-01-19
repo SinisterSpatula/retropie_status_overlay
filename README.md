@@ -46,6 +46,9 @@ In-game
 # PS3 Battery Indicator
 ![Effect](_images/PS3BatteryIndicator.png)  
 Effect
+
+## How to Use
+Make sure pngview is ok
 ```
 chmod +x bluetooth.sh
 ```
