@@ -50,6 +50,8 @@ Effect
 ## How to Use
 Make sure pngview is ok
 ```
+sudo apt-get install bluez-hcidump
+
 chmod +x bluetooth.sh
 ```
 chage /opt/retropie/configs/all/autostart.sh like below:
